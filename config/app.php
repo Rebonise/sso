@@ -28,6 +28,14 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+    /**
+     * Application Theme
+     *
+     * Based on DaisyUI's theme. Check the theme available here:
+     * https://daisyui.com/docs/default-themes/
+     */
+    'theme' => env('APP_THEME', 'light'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

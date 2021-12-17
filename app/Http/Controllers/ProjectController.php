@@ -45,12 +45,11 @@ class ProjectController extends Controller
     public function store(StoreProjectRequest $request)
     {
         try {
-            $project_payload = [
+            StoreProjectService::store(new Project, [
+                'user_id' => auth()->user()->id,
                 'name' => $request->name,
                 'key' => Crypt::encryptString(Str::random()),
-            ];
-
-            StoreProjectService::store(auth()->user(), $project_payload);
+            ]);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
@@ -98,11 +97,9 @@ class ProjectController extends Controller
         Gate::authorize('update', $project);
 
         try {
-            $project_payload = [
+            UpdateProjectService::update($project, [
                 'name' => $request->name,
-            ];
-
-            UpdateProjectService::update($project, $project_payload);
+            ]);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }

@@ -31,7 +31,7 @@
                     <tbody>
                         @forelse ($projects as $project)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $projects->firstItem() + $loop->index }}</td>
                             <td>{{ $project->name }}</td>
                             <td>
                                 <a href="{{ route('dashboard.project.show', $project->id) }}" class="button btn btn-sm btn-primary">
@@ -59,6 +59,9 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+            <div class="mt-6">
+                {{ $projects->links() }}
             </div>
         </div>
 

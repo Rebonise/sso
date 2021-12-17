@@ -16,7 +16,7 @@ class ProjectFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'name' => $this->faker->name,
+            'name' => $this->faker->name(),
             'key' => '$2y$10$28QepbXeF5sRAS.Y3Y.rkuDR1r4g/PyTcDZtgfmBJsStRtUjy7Spq', // thisisrandomkey
         ];
     }

@@ -8,7 +8,6 @@
     <div
         class="card bg-base-100 bordered mt-6 shadow"
         x-data="{
-            deleteProjectId: null,
             deleteProjectName: null,
             deleteProjectUrl: null,
         }"
@@ -44,7 +43,6 @@
                                     for="deletionModal"
                                     class="btn btn-sm btn-error"
                                     @click="
-                                        deleteProjectId = {{ $project->id }},
                                         deleteProjectName = '{{ $project->name }}',
                                         deleteProjectUrl = '{{ route('dashboard.project.destroy', $project) }}'"
                                 >

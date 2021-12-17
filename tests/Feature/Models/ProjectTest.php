@@ -1,18 +1,19 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Models;
 
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
-class ProjectFeatureTest extends TestCase
+class ProjectTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_confirm_project_screen_can_be_rendered()
+    public function test_index_page_can_be_rendered()
     {
         /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
         $user = User::factory()->create();
@@ -25,47 +26,45 @@ class ProjectFeatureTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_user_can_see_the_project_after_being_created()
+    public function test_data_can_be_rendered_through_index()
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
-        $user = User::factory()->hasProjects(1)->create();
+        $project = Project::factory()->create();
+        $user = $project->user;
         $this->actingAs($user);
 
         $response = $this->get(route('dashboard.project.index'));
         $project = $user->projects->first();
         $view_project = $response->viewData('projects');
 
+        $this->assertEquals($project->name, $view_project->first()->name);
         $response->assertSeeText($project->name);
         $response->assertDontSeeText("You haven't created any project.", false);
         $response->assertStatus(200);
-
-        $this->assertEquals($project->name, $view_project->first()->name);
     }
 
-    public function test_user_can_see_the_detail_project_after_being_created()
+    public function test_show_page_can_be_rendered()
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
-        $user = User::factory()->hasProjects(1)->create();
+        $project = Project::factory()->create();
+        $user = $project->user;
         $this->actingAs($user);
 
         $project = $user->projects->first();
         $response = $this->get(route('dashboard.project.show', $project));
         $view_project = $response->viewData('project');
 
+        $this->assertEquals($project->name, $view_project->first()->name);
         $response->assertSeeText('Project Detail');
         $response->assertSeeText('Project Overview');
         $response->assertSeeText($project->name);
         $response->assertSeeText(Crypt::decryptString($project->key));
         $response->assertSeeText($project->descriptive_created_at);
         $response->assertStatus(200);
-
-        $this->assertEquals($project->name, $view_project->first()->name);
     }
 
-    public function test_confirm_project_create_screen_can_be_rendered()
+    public function test_create_page_can_be_rendered()
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
-        $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $user = $project->user;
         $this->actingAs($user);
 
         $response = $this->get(route('dashboard.project.create'));
@@ -74,7 +73,7 @@ class ProjectFeatureTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_user_can_store_project_using_create_screen()
+    public function test_user_can_store_project_through_create_page()
     {
         /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
         $user = User::factory()->create();
@@ -91,30 +90,27 @@ class ProjectFeatureTest extends TestCase
         $response->assertSessionHas('success');
     }
 
-    public function test_confirm_project_edit_screen_can_be_rendered()
+    public function test_edit_page_can_be_rendered()
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
-        $user = User::factory()->hasProjects(1)->create();
-        $project = $user->projects->first();
+        $project = Project::factory()->create();
+        $user = $project->user;
         $this->actingAs($user);
 
         $response = $this->get(route('dashboard.project.edit', $project));
         $view_project = $response->viewData('project');
 
+        $this->assertEquals($project->name, $view_project->name);
         $response->assertSeeText('Edit a project');
         $response->assertStatus(200);
-
-        $this->assertEquals($project->name, $view_project->name);
     }
 
-    public function test_user_can_update_project_using_edit_screen()
+    public function test_user_can_update_project_through_edit_page()
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
-        $user = User::factory()->hasProjects(1)->create();
-        $project = $user->projects->first();
+        $project = Project::factory()->create();
+        $user = $project->user;
         $this->actingAs($user);
-        $this->get(route('dashboard.project.edit', $project));
 
+        $this->get(route('dashboard.project.edit', $project));
         $response = $this->put(route('dashboard.project.update', $project), [
             'name' => 'Shiroyuki',
             'key' => Str::random(),
@@ -125,14 +121,13 @@ class ProjectFeatureTest extends TestCase
         $response->assertSessionHas('success');
     }
 
-    public function test_user_can_delete_projet_using_index_screen()
+    public function test_user_can_delete_project_through_index_page()
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
-        $user = User::factory()->hasProjects(1)->create();
-        $project = $user->projects->first();
+        $project = Project::factory()->create();
+        $user = $project->user;
         $this->actingAs($user);
-        $this->get(route('dashboard.project.index'));
 
+        $this->get(route('dashboard.project.index'));
         $response = $this->delete(route('dashboard.project.destroy', $project));
 
         $response->assertRedirect(route('dashboard.project.index'));
@@ -142,29 +137,23 @@ class ProjectFeatureTest extends TestCase
 
     public function test_user_can_not_see_other_user_project()
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
-        $user = User::factory()->hasProjects(1)->create();
+        $project = Project::factory()->create();
+        $other_project = Project::factory()->create();
+        $user = $project->user;
         $this->actingAs($user);
 
-        $other_user = User::factory()->hasProjects(1)->create();
-        $other_project = $other_user->projects->first();
-
         $response = $this->get(route('dashboard.project.show', $other_project));
-
         $response->assertStatus(403);
     }
 
     public function test_user_can_not_edit_other_user_project()
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
-        $user = User::factory()->hasProjects(1)->create();
+        $project = Project::factory()->create();
+        $other_project = Project::factory()->create();
+        $user = $project->user;
         $this->actingAs($user);
 
-        $other_user = User::factory()->hasProjects(1)->create();
-        $other_project = $other_user->projects->first();
-
         $response = $this->get(route('dashboard.project.edit', $other_project));
-
         $response->assertStatus(403);
     }
 }

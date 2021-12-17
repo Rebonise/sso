@@ -3,10 +3,8 @@
 namespace Tests\Unit\Services\Projects;
 
 use App\Models\Project;
-use App\Models\User;
 use App\Services\Projects\SoftDeleteProjectService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class SoftDeleteProjectServiceTest extends TestCase
@@ -20,7 +18,8 @@ class SoftDeleteProjectServiceTest extends TestCase
      */
     public function test_soft_delete_project_service_can_soft_delete_project()
     {
-        $response = SoftDeleteProjectService::delete(Project::factory()->create());
+        $project = Project::factory()->create();
+        $response = SoftDeleteProjectService::delete($project);
 
         $this->assertTrue($response);
     }

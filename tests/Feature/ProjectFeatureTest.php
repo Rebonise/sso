@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -48,13 +49,13 @@ class ProjectFeatureTest extends TestCase
         $this->actingAs($user);
 
         $project = $user->projects->first();
-        $response = $this->get(route('dashboard.project.show', $project->id));
+        $response = $this->get(route('dashboard.project.show', $project));
         $view_project = $response->viewData('project');
 
         $response->assertSeeText('Project Detail');
         $response->assertSeeText('Project Overview');
         $response->assertSeeText($project->name);
-        $response->assertSeeText($project->key);
+        $response->assertSeeText(Crypt::decryptString($project->key));
         $response->assertSeeText($project->descriptive_created_at);
         $response->assertStatus(200);
 

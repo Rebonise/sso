@@ -20,6 +20,7 @@ Route::get('/', function () {
 Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['auth']], function() {
     Route::view('/', 'dashboard')->name('index');
     Route::resource('/project', \App\Http\Controllers\ProjectController::class);
+    Route::resource('/client', \App\Http\Controllers\ClientController::class);
 });
 
 require __DIR__.'/auth.php';

@@ -8,28 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Project extends Model
+class Client extends Model
 {
     use HasFactory, SoftDeletes;
 
     /**
-     * The user that the project belongs to.
+     * The project that the client belongs to.
      *
      * @return BelongsTo
      */
-    public function user()
+    public function project()
     {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
-     * The clients that belong to the project.
-     *
-     * @return HasMany
-     */
-    public function clients()
-    {
-        return $this->hasMany(Client::class);
+        return $this->belongsTo(Project::class);
     }
 
     public function getDescriptiveCreatedAtAttribute()
@@ -43,8 +33,7 @@ class Project extends Model
     }
 
     protected $fillable = [
-        'user_id',
+        'project_id',
         'name',
-        'key',
     ];
 }

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -13,11 +15,23 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * Return the user's projects.
+     * Get the user's project.
+     *
+     * @return HasMany
      */
     public function projects()
     {
         return $this->hasMany(Project::class);
+    }
+
+    /**
+     * Get the user's clients.
+     *
+     * @return HasManyThrough
+     */
+    public function clients()
+    {
+        return $this->hasManyThrough(Client::class, Project::class);
     }
 
     /**

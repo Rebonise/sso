@@ -25,7 +25,7 @@
                     <tr>
                         <td>Key</td>
                         <td>:</td>
-                        <td>{{ $project->key }}</td>
+                        <td>{{ $decryptor::decryptString($project->key) }}</td>
                     </tr>
                     <tr>
                         <td>Created at</td>

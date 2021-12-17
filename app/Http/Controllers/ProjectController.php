@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Services\Projects\SoftDeleteProjectService;
 use App\Services\Projects\StoreProjectService;
 use App\Services\Projects\UpdateProjectService;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 
 class ProjectController extends Controller
@@ -45,7 +46,7 @@ class ProjectController extends Controller
         try {
             $project_payload = [
                 'name' => $request->name,
-                'key' => Str::random(),
+                'key' => Crypt::encryptString(Str::random()),
             ];
 
             StoreProjectService::store(auth()->user(), $project_payload);
@@ -64,7 +65,9 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return view('project.show', compact('project'));
+        $decryptor = new Crypt;
+
+        return view('project.show', compact('project', 'decryptor'));
     }
 
     /**
@@ -90,7 +93,6 @@ class ProjectController extends Controller
         try {
             $project_payload = [
                 'name' => $request->name,
-                'key' => Str::random(),
             ];
 
             UpdateProjectService::update($project, $project_payload);

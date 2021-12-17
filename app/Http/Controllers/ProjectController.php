@@ -9,6 +9,7 @@ use App\Services\Projects\SoftDeleteProjectService;
 use App\Services\Projects\StoreProjectService;
 use App\Services\Projects\UpdateProjectService;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class ProjectController extends Controller
@@ -65,6 +66,8 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
+        Gate::authorize('view', $project);
+
         $decryptor = new Crypt;
 
         return view('project.show', compact('project', 'decryptor'));
@@ -78,6 +81,8 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
+        Gate::authorize('update', $project);
+
         return view('project.edit', compact('project'));
     }
 
@@ -90,6 +95,8 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
+        Gate::authorize('update', $project);
+
         try {
             $project_payload = [
                 'name' => $request->name,
@@ -111,6 +118,8 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
+        Gate::authorize('delete', $project);
+
         try {
             SoftDeleteProjectService::delete($project);
         } catch (\Exception $e) {

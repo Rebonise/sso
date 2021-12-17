@@ -139,4 +139,32 @@ class ProjectFeatureTest extends TestCase
         $response->assertSessionHasNoErrors();
         $response->assertSessionHas('success');
     }
+
+    public function test_user_can_not_see_other_user_project()
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        $user = User::factory()->hasProjects(1)->create();
+        $this->actingAs($user);
+
+        $other_user = User::factory()->hasProjects(1)->create();
+        $other_project = $other_user->projects->first();
+
+        $response = $this->get(route('dashboard.project.show', $other_project));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_user_can_not_edit_other_user_project()
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        $user = User::factory()->hasProjects(1)->create();
+        $this->actingAs($user);
+
+        $other_user = User::factory()->hasProjects(1)->create();
+        $other_project = $other_user->projects->first();
+
+        $response = $this->get(route('dashboard.project.edit', $other_project));
+
+        $response->assertStatus(403);
+    }
 }
